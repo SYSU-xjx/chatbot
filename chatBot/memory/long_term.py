@@ -30,3 +30,20 @@ class LongTermMemoryStore:
             (user_id,),
         ).fetchall()
         return {row["memory_key"]: row["memory_value"] for row in rows}
+
+    def forget_memory(self, user_id: str, memory_key: str) -> None:
+        self.connection.execute(
+            "DELETE FROM long_term_memories"
+            " WHERE user_id = ? AND memory_key = ?",
+            (user_id, memory_key),
+        )
+        self.connection.commit()
+
+    def list_memory_keys(self, user_id: str) -> list[str]:
+        rows = self.connection.execute(
+            "SELECT memory_key FROM long_term_memories"
+            " WHERE user_id = ?"
+            " ORDER BY memory_key",
+            (user_id,),
+        ).fetchall()
+        return [row["memory_key"] for row in rows]
